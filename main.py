@@ -40,10 +40,10 @@ Once you have executed a command on the remote server and retrieved its output a
 import paramiko
 import os
 import time
+from getpass import getpass
 
 username = os.environ['USER']
 password = os.environ['PWRD']
-
 
 def connect_host(Host):
     host = Host
@@ -59,7 +59,8 @@ def connect_host(Host):
         ssh_stdout,
         ssh_stderr
     ) = ssh_client.exec_command(' ')
-    ssh_stdin.channel.send("grep pattern 'failed to get group obj'  mp-log useridd.log")
+    #ssh_stdin.channel.send("grep pattern 'failed to get group obj'  mp-log useridd.log")
+    ssh_stdin.channel.send("grep pattern 'error'  mp-log useridd.log")
     ssh_stdin.channel.shutdown_write()
     resp = ssh_stdout.read().decode('utf_8')
     ssh_client.close()
@@ -67,7 +68,8 @@ def connect_host(Host):
 
 
 def match_pattern(string1):
-    if "failed to get group obj" in string1:
+    #if "failed to get group obj" in string1:
+    if "error" in string1:
         return True
     else:
         return False
@@ -79,14 +81,15 @@ def send_email():
 
 
 def main():
-    out_string = connect_host("1.1.1.1")
-    result1 = match_pattern(out_string)
-    if result1 == True:
-        print("error found")
-        send_email()
-    else:
-        print("no error found")
-        pass
+    for fw_ip in ["1.1.1.1"]:
+        out_string = connect_host(fw_ip)
+        result1 = match_pattern(out_string)
+        if result1 == True:
+            print(f"error found in {fw_ip}")
+            send_email()
+        else:
+            print("no error found")
+            pass
 
 
 if __name__ == '__main__':
