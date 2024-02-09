@@ -42,8 +42,8 @@ import os
 import time
 from getpass import getpass
 
-username = os.environ['USER']
-password = os.environ['PWRD']
+# username = os.environ['USER']
+# password = os.environ['PWRD']
 
 def connect_host(Host):
     host = Host
@@ -51,8 +51,8 @@ def connect_host(Host):
     ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh_client.connect(
         host,
-        username=username,
-        password=password
+        username="admin",
+        password="Nithiya315!"
     )
     (
         ssh_stdin,
@@ -60,11 +60,12 @@ def connect_host(Host):
         ssh_stderr
     ) = ssh_client.exec_command(' ')
     #ssh_stdin.channel.send("grep pattern 'failed to get group obj'  mp-log useridd.log")
-    ssh_stdin.channel.send("grep pattern 'error'  mp-log useridd.log")
-    ssh_stdin.channel.shutdown_write()
-    resp = ssh_stdout.read().decode('utf_8')
+    ssh_stdin.channel.send("debug software restart process user-id core yes")
+    # ssh_stdin.channel.shutdown_write()
+    # resp = ssh_stdout.read().decode('utf_8')
     ssh_client.close()
-    return resp
+    # return resp
+    return "success"
 
 
 def match_pattern(string1):
@@ -81,15 +82,16 @@ def send_email():
 
 
 def main():
-    for fw_ip in ["1.1.1.1"]:
+    for fw_ip in ["10.50.6.1"]:
         out_string = connect_host(fw_ip)
         result1 = match_pattern(out_string)
-        if result1 == True:
-            print(f"error found in {fw_ip}")
-            send_email()
-        else:
-            print("no error found")
-            pass
+    print("succes")
+        # if result1 == True:
+        #     print(f"error found in {fw_ip}")
+        #     send_email()
+        # else:
+        #     print("no error found")
+        #     pass
 
 
 if __name__ == '__main__':
